@@ -1,0 +1,15 @@
+{
+  "appTitle": "Visual Calculator",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "settings": "Settings",
+  "systemTheme": "System Theme",
+  "lightTheme": "Light Theme",
+  "darkTheme": "Dark Theme",
+  "english": "English",
+  "indonesian": "Indonesian",
+  "calculate": "Calculate",
+  "expression": "Expression",
+  "result": "Result"
+}

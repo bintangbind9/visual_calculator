@@ -1,0 +1,15 @@
+{
+  "appTitle": "Kalkulator Visual",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "settings": "Pengaturan",
+  "systemTheme": "Tema Sistem",
+  "lightTheme": "Tema Terang",
+  "darkTheme": "Tema Gelap",
+  "english": "Inggris",
+  "indonesian": "Bahasa Indonesia",
+  "calculate": "Hitung",
+  "expression": "Ekspresi",
+  "result": "Hasil"
+}
