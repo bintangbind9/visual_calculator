@@ -1,72 +1,76 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'common/constant/app_color.dart';
 import 'common/util/extension/build_context_extension.dart';
-import 'presentation/settings/settings_controller.dart';
-import 'router/router.dart' as router;
+import 'presentation/bloc/locale/locale_bloc.dart';
+import 'presentation/bloc/main_color_index/main_color_index_bloc.dart';
+import 'presentation/bloc/theme_mode/theme_mode_bloc.dart';
+import 'router/router.dart';
 
-/// The Widget that configures your application.
 class App extends StatelessWidget {
-  const App({
-    super.key,
-    required this.settingsController,
-  });
-
-  final SettingsController settingsController;
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Glue the SettingsController to the MaterialApp.
-    //
-    // The ListenableBuilder Widget listens to the SettingsController for changes.
-    // Whenever the user updates their settings, the MaterialApp is rebuilt.
-    return ListenableBuilder(
-      listenable: settingsController,
-      builder: (BuildContext context, Widget? child) {
-        return MaterialApp.router(
-          // Providing a restorationScopeId allows the Navigator built by the
-          // MaterialApp to restore the navigation stack when a user leaves and
-          // returns to the app after it has been killed while running in the
-          // background.
-          restorationScopeId: 'app',
+    return Builder(builder: (context) {
+      final mainColorIndex = context.watch<MainColorIndexBloc>().state;
+      final locale = context.watch<LocaleBloc>().state;
+      final themeMode = context.watch<ThemeModeBloc>().state;
 
-          // Provide the generated AppLocalizations to the MaterialApp. This
-          // allows descendant Widgets to display the correct translations
-          // depending on the user's locale.
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en'), // English, no country code
-            Locale('id'), // Indonesian, no country code
-          ],
-          locale: settingsController.locale,
+      return MaterialApp.router(
+        // Providing a restorationScopeId allows the Navigator built by the
+        // MaterialApp to restore the navigation stack when a user leaves and
+        // returns to the app after it has been killed while running in the
+        // background.
+        restorationScopeId: 'app',
 
-          // Use AppLocalizations to configure the correct application title
-          // depending on the user's locale.
-          //
-          // The appTitle is defined in .arb files found in the localization
-          // directory.
-          onGenerateTitle: (BuildContext context) => context.local.appTitle,
+        // Provide the generated AppLocalizations to the MaterialApp. This
+        // allows descendant Widgets to display the correct translations
+        // depending on the user's locale.
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('en'), // English, no country code
+          Locale('id'), // Indonesian, no country code
+        ],
+        locale: locale,
 
-          // Define a light and dark color theme. Then, read the user's
-          // preferred ThemeMode (light, dark, or system default) from the
-          // SettingsController to display the correct theme.
-          theme: ThemeData(),
-          darkTheme: ThemeData.dark(),
-          themeMode: settingsController.themeMode,
+        // Use AppLocalizations to configure the correct application title
+        // depending on the user's locale.
+        //
+        // The appTitle is defined in .arb files found in the localization
+        // directory.
+        onGenerateTitle: (BuildContext context) => context.local.appTitle,
 
-          debugShowCheckedModeBanner: false,
-          debugShowMaterialGrid: false,
-          routerConfig: router.Router(
-            settingsController: settingsController,
-          ).router,
-        );
-      },
-    );
+        // Define a light and dark color theme. Then, read the user's
+        // preferred ThemeMode (light, dark, or system default).
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: AppColor.mainColors[mainColorIndex],
+            brightness: Brightness.light,
+          ),
+          useMaterial3: true,
+        ),
+        darkTheme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: AppColor.mainColors[mainColorIndex],
+            brightness: Brightness.dark,
+          ),
+          useMaterial3: true,
+        ),
+        themeMode: themeMode,
+
+        debugShowCheckedModeBanner: false,
+        debugShowMaterialGrid: false,
+        routerConfig: router,
+      );
+    });
   }
 }
