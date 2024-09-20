@@ -163,14 +163,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.22"
-  flutter_tesseract_ocr:
-    dependency: "direct main"
-    description:
-      name: flutter_tesseract_ocr
-      sha256: c3af11e3a8803b36bd24f7ec8ff3e0e21168dac917407357ae177ddf9fe10180
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.26"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -197,6 +189,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "14.2.7"
+  google_mlkit_commons:
+    dependency: transitive
+    description:
+      name: google_mlkit_commons
+      sha256: "9990a65f407a3ef6bae646bf10143faa93fec126683771465bc6c0b43fb0e6e9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.1"
+  google_mlkit_text_recognition:
+    dependency: "direct main"
+    description:
+      name: google_mlkit_text_recognition
+      sha256: "179349417066fa2c275d7a6ed6cbceeb7fa265d73aacdb2d732f1a2991face0a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.13.1"
   http:
     dependency: transitive
     description:
@@ -285,14 +293,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.19.0"
-  js:
-    dependency: transitive
-    description:
-      name: js
-      sha256: f2c445dce49627136094980615a031419f7f3eb393237e4ecd97ac15dea343f3
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.6.7"
   leak_tracker:
     dependency: transitive
     description:

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../common/util/extension/build_context_extension.dart';
-import '../bloc/locale/locale_bloc.dart';
-import '../bloc/theme_mode/theme_mode_bloc.dart';
+import '../../../common/util/extension/build_context_extension.dart';
+import '../../bloc/locale/locale_bloc.dart';
+import '../../bloc/theme_mode/theme_mode_bloc.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});

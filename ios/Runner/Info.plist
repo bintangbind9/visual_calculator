@@ -24,6 +24,42 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NFCReaderUsageDescription</key>
+	<string>This app requires access to use NFC</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>This app requires access to use Bluetooth</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>This app requires access to use Calendar</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires access to open Camera</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app requires access to use Contacts</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>This app requires access to use Face ID</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app requires access to use Location Always</string>
+	<key>NSLocationUsageDescription</key>
+	<string>This app requires access to use Location</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app requires access to use Location When In Use</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app requires access to use Microphone</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app requires access to Add Photo Library</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires access to Photo Library</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This app requires access to Apple Music</string>
+	<key>UISupportsDocumentBrowser</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
