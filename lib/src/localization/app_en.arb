@@ -15,5 +15,6 @@
   "gallery": "Gallery",
   "camera": "Camera",
   "file": "File",
-  "other": "Other"
+  "other": "Other",
+  "loading": "Loading"
 }

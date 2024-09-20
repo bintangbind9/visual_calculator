@@ -1,12 +1,17 @@
+import 'dart:developer';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_tesseract_ocr/flutter_tesseract_ocr.dart';
+import 'package:get_it/get_it.dart' show GetIt;
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../common/constant/app_color.dart';
 import '../../common/enum/upload_type.dart';
 import '../../common/util/extension/build_context_extension.dart';
+import '../../common/util/overlay/loading/loading_screen.dart';
 import '../../common/util/platform/app_platform.dart';
 import '../../router/routes.dart';
 import '../bloc/main_color_index/main_color_index_bloc.dart';
@@ -108,6 +113,32 @@ class HomeView extends StatelessWidget {
     }
 
     if (xFile == null) return;
-    // TODO: Scan xFile!
+
+    try {
+      if (!context.mounted) return;
+
+      GetIt.I<LoadingScreen>().show(
+        context: context,
+        text: context.local.loading,
+      );
+
+      String text = await FlutterTesseractOcr.extractText(
+        xFile.path,
+        language: 'eng+ind',
+        args: {
+          "psm": "4",
+          "preserve_interword_spaces": "1",
+        },
+      );
+
+      text = text.split('\n').first;
+
+      // TODO: Calculate this text expression!
+      log(text);
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      GetIt.I<LoadingScreen>().hide();
+    }
   }
 }
