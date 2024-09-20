@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'common/constant/app_color.dart';
 import 'common/util/extension/build_context_extension.dart';
@@ -21,25 +20,11 @@ class App extends StatelessWidget {
       final themeMode = context.watch<ThemeModeBloc>().state;
 
       return MaterialApp.router(
-        // Providing a restorationScopeId allows the Navigator built by the
-        // MaterialApp to restore the navigation stack when a user leaves and
-        // returns to the app after it has been killed while running in the
-        // background.
-        restorationScopeId: 'app',
-
         // Provide the generated AppLocalizations to the MaterialApp. This
         // allows descendant Widgets to display the correct translations
         // depending on the user's locale.
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('en'), // English, no country code
-          Locale('id'), // Indonesian, no country code
-        ],
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         locale: locale,
 
         // Use AppLocalizations to configure the correct application title
