@@ -11,5 +11,9 @@
   "indonesian": "Indonesian",
   "calculate": "Calculate",
   "expression": "Expression",
-  "result": "Result"
+  "result": "Result",
+  "gallery": "Gallery",
+  "camera": "Camera",
+  "file": "File",
+  "other": "Other"
 }
