@@ -70,7 +70,6 @@ class HomeView extends StatelessWidget {
           child: BlocBuilder<CalculationHistoryBloc, CalculationHistoryState>(
             builder: (context, state) {
               return ListView.separated(
-                reverse: true,
                 shrinkWrap: true,
                 itemCount: state.calculationHistories.length,
                 separatorBuilder: (context, index) => const SizedBox(height: 4),
