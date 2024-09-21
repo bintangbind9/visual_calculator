@@ -1,9 +1,15 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:encrypt/encrypt.dart';
+import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../common/util/encryptor/encryptor.dart';
+
 class FileService {
+  final encryptor = GetIt.I<Encryptor>();
+
   Future<String> get _localPath async {
     /*
     final directory = getCurrentPlatform == AppPlatform.android
@@ -24,8 +30,11 @@ class FileService {
   Future<File> write(String fileName, String content) async {
     final file = await _localFile(fileName);
 
+    // Encrypt content
+    final encrypted = encryptor.encrypt(content);
+
     // Write the file
-    return await file.writeAsString(content);
+    return await file.writeAsString(encrypted.base64);
   }
 
   Future<String> read(
@@ -36,7 +45,10 @@ class FileService {
       final file = await _localFile(fileName);
 
       // Read the file
-      final content = await file.readAsString();
+      String content = await file.readAsString();
+
+      // Decrypt content
+      content = encryptor.decrypt(Encrypted.fromBase64(content));
 
       return content;
     } on PathNotFoundException catch (_) {

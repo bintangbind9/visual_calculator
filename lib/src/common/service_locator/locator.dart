@@ -11,12 +11,14 @@ import '../../domain/usecase/calculation_history/get_all_calculation_history_use
 import '../../domain/usecase/calculation_history/get_calculation_history_use_case.dart';
 import '../../domain/usecase/calculation_history/update_calculation_history_use_case.dart';
 import '../util/calculator/calculator.dart';
+import '../util/encryptor/encryptor.dart';
 import '../util/overlay/loading/loading_screen.dart';
 
 void setupLocator() {
   // COMMON
   GetIt.I.registerSingleton<LoadingScreen>(LoadingScreen());
   GetIt.I.registerSingleton<Calculator>(Calculator());
+  GetIt.I.registerSingleton<Encryptor>(Encryptor());
 
   // SERVICES
   GetIt.I.registerSingleton<SqliteService>(SqliteService());
