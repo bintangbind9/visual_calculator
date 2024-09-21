@@ -206,7 +206,7 @@ class HomeView extends StatelessWidget {
 
       GetIt.I<LoadingScreen>().show(
         context: context,
-        text: context.local.loading,
+        text: context.local.calculating,
       );
 
       text = await scanText(xFile);

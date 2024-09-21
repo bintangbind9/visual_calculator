@@ -13,6 +13,8 @@ import '../../bloc/calculation_history/calculation_history_bloc.dart';
 import '../../bloc/locale/locale_bloc.dart';
 import '../../bloc/storage_type/storage_type_bloc.dart';
 import '../../bloc/theme_mode/theme_mode_bloc.dart';
+import '../../widget/custom_option_item.dart';
+import '../../widget/general_section.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
@@ -30,122 +32,130 @@ class SettingsView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            BlocBuilder<ThemeModeBloc, ThemeMode>(
-              builder: (context, themeMode) {
-                return DropdownButton<ThemeMode>(
-                  isExpanded: true,
-                  value: themeMode,
-                  onChanged: (newThemeMode) async {
-                    if (newThemeMode == null) return;
-                    if (themeMode == newThemeMode) return;
-                    context
-                        .read<ThemeModeBloc>()
-                        .add(UpdateThemeMode(themeMode: newThemeMode));
-
-                    final prefs = await SharedPreferences.getInstance();
-                    await prefs.setString(
-                      AppConstant.sharedPreferencesThemeMode,
-                      newThemeMode.name,
-                    );
-                  },
-                  items: [
-                    DropdownMenuItem(
-                      value: ThemeMode.system,
-                      child: Text(context.local.systemTheme),
-                    ),
-                    DropdownMenuItem(
-                      value: ThemeMode.light,
-                      child: Text(context.local.lightTheme),
-                    ),
-                    DropdownMenuItem(
-                      value: ThemeMode.dark,
-                      child: Text(context.local.darkTheme),
-                    )
-                  ],
-                );
-              },
+            GeneralSection(
+              name: context.local.theme,
+              content: BlocBuilder<ThemeModeBloc, ThemeMode>(
+                builder: (context, themeMode) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Expanded(
+                        child: CustomOptionItem(
+                          isTextExpanded: true,
+                          text: context.local.system,
+                          icon: Icons.settings,
+                          isSelected: themeMode == ThemeMode.system,
+                          onTap: () async {
+                            if (themeMode == ThemeMode.system) return;
+                            await updateThemeMode(context, ThemeMode.system);
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: CustomOptionItem(
+                          isTextExpanded: true,
+                          text: context.local.light,
+                          icon: Icons.light_mode,
+                          isSelected: themeMode == ThemeMode.light,
+                          onTap: () async {
+                            if (themeMode == ThemeMode.light) return;
+                            await updateThemeMode(context, ThemeMode.light);
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: CustomOptionItem(
+                          isTextExpanded: true,
+                          text: context.local.dark,
+                          icon: Icons.dark_mode,
+                          isSelected: themeMode == ThemeMode.dark,
+                          onTap: () async {
+                            if (themeMode == ThemeMode.dark) return;
+                            await updateThemeMode(context, ThemeMode.dark);
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
-            BlocBuilder<LocaleBloc, Locale>(
-              builder: (context, locale) {
-                return DropdownButton<Locale>(
-                  isExpanded: true,
-                  value: locale,
-                  onChanged: (newLocale) async {
-                    if (newLocale == null) return;
-                    if (locale.languageCode == newLocale.languageCode) return;
-                    context
-                        .read<LocaleBloc>()
-                        .add(UpdateLocale(locale: newLocale));
-
-                    final prefs = await SharedPreferences.getInstance();
-                    await prefs.setString(
-                      AppConstant.sharedPreferencesLanguageCode,
-                      newLocale.languageCode,
-                    );
-                  },
-                  items: [
-                    DropdownMenuItem(
-                      value: const Locale('en'),
-                      child: Text(context.local.english),
-                    ),
-                    DropdownMenuItem(
-                      value: const Locale('in'),
-                      child: Text(context.local.indonesian),
-                    ),
-                  ],
-                );
-              },
+            const SizedBox(height: 20),
+            GeneralSection(
+              name: context.local.language,
+              content: BlocBuilder<LocaleBloc, Locale>(
+                builder: (context, locale) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Expanded(
+                        child: CustomOptionItem(
+                          isTextExpanded: true,
+                          text: context.local.english,
+                          isSelected: locale.languageCode == 'en',
+                          onTap: () async {
+                            if (locale.languageCode == 'en') return;
+                            await updateLocale(context, const Locale('en'));
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: CustomOptionItem(
+                          isTextExpanded: true,
+                          text: context.local.indonesian,
+                          isSelected: locale.languageCode == 'id',
+                          onTap: () async {
+                            if (locale.languageCode == 'id') return;
+                            await updateLocale(context, const Locale('id'));
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
-            BlocBuilder<StorageTypeBloc, StorageType>(
-              builder: (context, storageType) {
-                return DropdownButton<StorageType>(
-                  isExpanded: true,
-                  value: storageType,
-                  onChanged: (newStorageType) async {
-                    if (newStorageType == null) return;
-                    if (storageType == newStorageType) return;
-                    context
-                        .read<StorageTypeBloc>()
-                        .add(UpdateStorageType(storageType: newStorageType));
-
-                    final prefs = await SharedPreferences.getInstance();
-                    await prefs.setString(
-                      AppConstant.sharedPreferencesStorageType,
-                      newStorageType.name,
-                    );
-
-                    switch (newStorageType) {
-                      case StorageType.database:
-                        await setupLocatorStorageTypeDatabase();
-                        await setupLocatorCalculationHistoryUseCase();
-                        break;
-                      case StorageType.file:
-                        await setupLocatorStorageTypeFile();
-                        await setupLocatorCalculationHistoryUseCase();
-                        break;
-                    }
-
-                    final getAllCalculationHistoryUseCase =
-                        GetIt.I<GetAllCalculationHistoryUseCase>();
-                    final calculationHistories =
-                        await getAllCalculationHistoryUseCase.call(null);
-                    if (context.mounted) {
-                      setCalculationHistories(
-                          context, calculationHistories.toList());
-                    }
-                  },
-                  items: [
-                    DropdownMenuItem(
-                      value: StorageType.database,
-                      child: Text(context.local.databaseStorage),
-                    ),
-                    DropdownMenuItem(
-                      value: StorageType.file,
-                      child: Text(context.local.fileStorage),
-                    ),
-                  ],
-                );
-              },
+            const SizedBox(height: 20),
+            GeneralSection(
+              name: context.local.storageType,
+              content: BlocBuilder<StorageTypeBloc, StorageType>(
+                builder: (context, storageType) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Expanded(
+                        child: CustomOptionItem(
+                          isTextExpanded: true,
+                          text: context.local.databaseStorage,
+                          isSelected: storageType == StorageType.database,
+                          onTap: () async {
+                            if (storageType == StorageType.database) return;
+                            await updateStorageType(
+                              context,
+                              StorageType.database,
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: CustomOptionItem(
+                          isTextExpanded: true,
+                          text: context.local.fileStorage,
+                          isSelected: storageType == StorageType.file,
+                          onTap: () async {
+                            if (storageType == StorageType.file) return;
+                            await updateStorageType(context, StorageType.file);
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -160,5 +170,62 @@ class SettingsView extends StatelessWidget {
     context
         .read<CalculationHistoryBloc>()
         .add(SetCalculationHistory(calculationHistories: calculationHistories));
+  }
+
+  Future<void> updateThemeMode(
+    BuildContext context,
+    ThemeMode newThemeMode,
+  ) async {
+    context.read<ThemeModeBloc>().add(UpdateThemeMode(themeMode: newThemeMode));
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      AppConstant.sharedPreferencesThemeMode,
+      newThemeMode.name,
+    );
+  }
+
+  Future<void> updateLocale(BuildContext context, Locale newLocale) async {
+    context.read<LocaleBloc>().add(UpdateLocale(locale: newLocale));
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      AppConstant.sharedPreferencesLanguageCode,
+      newLocale.languageCode,
+    );
+  }
+
+  Future<void> updateStorageType(
+    BuildContext context,
+    StorageType newStorageType,
+  ) async {
+    context
+        .read<StorageTypeBloc>()
+        .add(UpdateStorageType(storageType: newStorageType));
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      AppConstant.sharedPreferencesStorageType,
+      newStorageType.name,
+    );
+
+    switch (newStorageType) {
+      case StorageType.database:
+        await setupLocatorStorageTypeDatabase();
+        await setupLocatorCalculationHistoryUseCase();
+        break;
+      case StorageType.file:
+        await setupLocatorStorageTypeFile();
+        await setupLocatorCalculationHistoryUseCase();
+        break;
+    }
+
+    final getAllCalculationHistoryUseCase =
+        GetIt.I<GetAllCalculationHistoryUseCase>();
+    final calculationHistories =
+        await getAllCalculationHistoryUseCase.call(null);
+    if (context.mounted) {
+      setCalculationHistories(context, calculationHistories.toList());
+    }
   }
 }
