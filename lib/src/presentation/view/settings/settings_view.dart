@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../common/constant/app_constant.dart';
 import '../../../common/util/extension/build_context_extension.dart';
 import '../../bloc/locale/locale_bloc.dart';
 import '../../bloc/theme_mode/theme_mode_bloc.dart';
@@ -26,12 +28,18 @@ class SettingsView extends StatelessWidget {
                 return DropdownButton<ThemeMode>(
                   isExpanded: true,
                   value: themeMode,
-                  onChanged: (newThemeMode) {
+                  onChanged: (newThemeMode) async {
                     if (newThemeMode == null) return;
                     if (themeMode == newThemeMode) return;
                     context
                         .read<ThemeModeBloc>()
                         .add(UpdateThemeMode(themeMode: newThemeMode));
+
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setString(
+                      AppConstant.sharedPreferencesThemeMode,
+                      newThemeMode.name,
+                    );
                   },
                   items: [
                     DropdownMenuItem(
@@ -55,12 +63,18 @@ class SettingsView extends StatelessWidget {
                 return DropdownButton<Locale>(
                   isExpanded: true,
                   value: locale,
-                  onChanged: (newLocale) {
+                  onChanged: (newLocale) async {
                     if (newLocale == null) return;
                     if (locale.languageCode == newLocale.languageCode) return;
                     context
                         .read<LocaleBloc>()
                         .add(UpdateLocale(locale: newLocale));
+
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setString(
+                      AppConstant.sharedPreferencesLanguageCode,
+                      newLocale.languageCode,
+                    );
                   },
                   items: [
                     DropdownMenuItem(

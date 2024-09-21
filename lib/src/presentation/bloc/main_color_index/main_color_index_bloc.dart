@@ -7,10 +7,14 @@ part 'main_color_index_event.dart';
 
 class MainColorIndexBloc extends Bloc<MainColorIndexEvent, int> {
   MainColorIndexBloc() : super(0) {
-    on<MainColorIndexEvent>((event, emit) {
+    on<UpdateMainColorIndex>((event, emit) {
       int result = state + 1;
       if (result < 0 || result > AppColor.mainColors.length - 1) result = 0;
       emit(result);
+    });
+
+    on<SetMainColorIndex>((event, emit) {
+      emit(event.index);
     });
   }
 }

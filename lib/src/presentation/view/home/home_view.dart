@@ -6,8 +6,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart' show GetIt;
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../common/constant/app_color.dart';
+import '../../../common/constant/app_constant.dart';
 import '../../../common/enum/upload_type.dart';
 import '../../../common/util/extension/build_context_extension.dart';
 import '../../../common/util/overlay/loading/loading_screen.dart';
@@ -21,36 +23,46 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.local.appTitle),
-        actions: [
-          IconButton(
-            onPressed: () =>
-                context.read<MainColorIndexBloc>().add(UpdateMainColorIndex()),
-            icon: BlocBuilder<MainColorIndexBloc, int>(
-              builder: (context, index) {
-                return Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: AppColor.mainColors[index],
-                    shape: BoxShape.circle,
-                  ),
-                );
-              },
+    return BlocListener<MainColorIndexBloc, int>(
+      listener: (context, mainColorIndex) async {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setInt(
+          AppConstant.sharedPreferencesMainColorIndex,
+          mainColorIndex,
+        );
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(context.local.appTitle),
+          actions: [
+            IconButton(
+              onPressed: () async => context
+                  .read<MainColorIndexBloc>()
+                  .add(UpdateMainColorIndex()),
+              icon: BlocBuilder<MainColorIndexBloc, int>(
+                builder: (context, index) {
+                  return Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: AppColor.mainColors[index],
+                      shape: BoxShape.circle,
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-          IconButton(
-            onPressed: () => context.goNamed(Routes.settings),
-            icon: const Icon(Icons.settings),
-          ),
-        ],
-      ),
-      body: Container(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async => await onAddFile(context),
-        child: const Icon(Icons.add),
+            IconButton(
+              onPressed: () => context.goNamed(Routes.settings),
+              icon: const Icon(Icons.settings),
+            ),
+          ],
+        ),
+        body: Container(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async => await onAddFile(context),
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
