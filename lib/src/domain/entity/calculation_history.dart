@@ -29,8 +29,17 @@ class CalculationHistory {
         result: json[resultColumn],
       );
 
-  Map<String, dynamic> toJson() => {
-        expressionColumn: expression,
-        resultColumn: result,
-      };
+  Map<String, dynamic> toJson() {
+    final mapId = {idColumn: id};
+    final mapContent = {
+      expressionColumn: expression,
+      resultColumn: result,
+    };
+
+    if (id > 0) {
+      return {...mapId, ...mapContent};
+    } else {
+      return mapContent;
+    }
+  }
 }

@@ -8,6 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'common/constant/app_color.dart';
 import 'common/constant/app_constant.dart';
 import 'common/enum/screen_size.dart';
+import 'common/enum/storage_type.dart';
+import 'common/service_locator/locator.dart';
 import 'common/util/extension/build_context_extension.dart';
 import 'domain/entity/calculation_history.dart';
 import 'domain/usecase/calculation_history/get_all_calculation_history_use_case.dart';
@@ -15,6 +17,7 @@ import 'presentation/bloc/calculation_history/calculation_history_bloc.dart';
 import 'presentation/bloc/locale/locale_bloc.dart';
 import 'presentation/bloc/main_color_index/main_color_index_bloc.dart';
 import 'presentation/bloc/screen_size/screen_size_bloc.dart';
+import 'presentation/bloc/storage_type/storage_type_bloc.dart';
 import 'presentation/bloc/theme_mode/theme_mode_bloc.dart';
 import 'router/router.dart';
 
@@ -37,6 +40,11 @@ class _AppState extends State<App> {
   void updateThemeMode(String themeModeName) {
     context.read<ThemeModeBloc>().add(
         UpdateThemeMode(themeMode: ThemeMode.values.byName(themeModeName)));
+  }
+
+  void updateStorageType(String storageTypeName) {
+    context.read<StorageTypeBloc>().add(UpdateStorageType(
+        storageType: StorageType.values.byName(storageTypeName)));
   }
 
   void setCalculationHistories(List<CalculationHistory> calculationHistories) {
@@ -64,6 +72,22 @@ class _AppState extends State<App> {
           prefs.getString(AppConstant.sharedPreferencesThemeMode);
       themeModeName = themeModeName ?? ThemeMode.system.name;
       updateThemeMode(themeModeName);
+
+      String? storageTypeName =
+          prefs.getString(AppConstant.sharedPreferencesStorageType);
+      storageTypeName = storageTypeName ?? StorageType.database.name;
+      updateStorageType(storageTypeName);
+
+      switch (StorageType.values.byName(storageTypeName)) {
+        case StorageType.database:
+          await setupLocatorStorageTypeDatabase();
+          await setupLocatorCalculationHistoryUseCase();
+          break;
+        case StorageType.file:
+          await setupLocatorStorageTypeFile();
+          await setupLocatorCalculationHistoryUseCase();
+          break;
+      }
 
       final getAllCalculationHistoryUseCase =
           GetIt.I<GetAllCalculationHistoryUseCase>();

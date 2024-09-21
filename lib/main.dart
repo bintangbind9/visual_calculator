@@ -7,6 +7,7 @@ import 'src/presentation/bloc/calculation_history/calculation_history_bloc.dart'
 import 'src/presentation/bloc/locale/locale_bloc.dart';
 import 'src/presentation/bloc/main_color_index/main_color_index_bloc.dart';
 import 'src/presentation/bloc/screen_size/screen_size_bloc.dart';
+import 'src/presentation/bloc/storage_type/storage_type_bloc.dart';
 import 'src/presentation/bloc/theme_mode/theme_mode_bloc.dart';
 
 void main() async {
@@ -29,6 +30,9 @@ void main() async {
         ),
         BlocProvider(
           create: (context) => CalculationHistoryBloc(),
+        ),
+        BlocProvider(
+          create: (context) => StorageTypeBloc(),
         ),
       ],
       child: const App(),

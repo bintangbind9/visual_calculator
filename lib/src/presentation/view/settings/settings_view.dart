@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../common/constant/app_constant.dart';
+import '../../../common/enum/storage_type.dart';
+import '../../../common/service_locator/locator.dart';
 import '../../../common/util/extension/build_context_extension.dart';
+import '../../../domain/entity/calculation_history.dart';
+import '../../../domain/usecase/calculation_history/get_all_calculation_history_use_case.dart';
+import '../../bloc/calculation_history/calculation_history_bloc.dart';
 import '../../bloc/locale/locale_bloc.dart';
+import '../../bloc/storage_type/storage_type_bloc.dart';
 import '../../bloc/theme_mode/theme_mode_bloc.dart';
 
 class SettingsView extends StatelessWidget {
@@ -89,9 +96,69 @@ class SettingsView extends StatelessWidget {
                 );
               },
             ),
+            BlocBuilder<StorageTypeBloc, StorageType>(
+              builder: (context, storageType) {
+                return DropdownButton<StorageType>(
+                  isExpanded: true,
+                  value: storageType,
+                  onChanged: (newStorageType) async {
+                    if (newStorageType == null) return;
+                    if (storageType == newStorageType) return;
+                    context
+                        .read<StorageTypeBloc>()
+                        .add(UpdateStorageType(storageType: newStorageType));
+
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setString(
+                      AppConstant.sharedPreferencesStorageType,
+                      newStorageType.name,
+                    );
+
+                    switch (newStorageType) {
+                      case StorageType.database:
+                        await setupLocatorStorageTypeDatabase();
+                        await setupLocatorCalculationHistoryUseCase();
+                        break;
+                      case StorageType.file:
+                        await setupLocatorStorageTypeFile();
+                        await setupLocatorCalculationHistoryUseCase();
+                        break;
+                    }
+
+                    final getAllCalculationHistoryUseCase =
+                        GetIt.I<GetAllCalculationHistoryUseCase>();
+                    final calculationHistories =
+                        await getAllCalculationHistoryUseCase.call(null);
+                    if (context.mounted) {
+                      setCalculationHistories(
+                          context, calculationHistories.toList());
+                    }
+                  },
+                  items: [
+                    DropdownMenuItem(
+                      value: StorageType.database,
+                      child: Text(context.local.databaseStorage),
+                    ),
+                    DropdownMenuItem(
+                      value: StorageType.file,
+                      child: Text(context.local.fileStorage),
+                    ),
+                  ],
+                );
+              },
+            ),
           ],
         ),
       ),
     );
+  }
+
+  void setCalculationHistories(
+    BuildContext context,
+    List<CalculationHistory> calculationHistories,
+  ) {
+    context
+        .read<CalculationHistoryBloc>()
+        .add(SetCalculationHistory(calculationHistories: calculationHistories));
   }
 }

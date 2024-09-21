@@ -3,6 +3,7 @@ class AppConstant {
   static const String sharedPreferencesMainColorIndex = 'main_color_index';
   static const String sharedPreferencesLanguageCode = 'language_code';
   static const String sharedPreferencesThemeMode = 'theme_mode';
+  static const String sharedPreferencesStorageType = 'storage_type';
   static const double minDialogWidth = 100;
   static const double maxDialogWidth = 400;
   static const double smallScreenMaxWidth = 480;
