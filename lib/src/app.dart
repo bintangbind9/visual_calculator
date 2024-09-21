@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'common/constant/app_color.dart';
 import 'common/constant/app_constant.dart';
+import 'common/enum/screen_size.dart';
 import 'common/util/extension/build_context_extension.dart';
+import 'domain/entity/calculation_history.dart';
+import 'domain/usecase/calculation_history/get_all_calculation_history_use_case.dart';
+import 'presentation/bloc/calculation_history/calculation_history_bloc.dart';
 import 'presentation/bloc/locale/locale_bloc.dart';
 import 'presentation/bloc/main_color_index/main_color_index_bloc.dart';
+import 'presentation/bloc/screen_size/screen_size_bloc.dart';
 import 'presentation/bloc/theme_mode/theme_mode_bloc.dart';
 import 'router/router.dart';
 
@@ -33,6 +39,12 @@ class _AppState extends State<App> {
         UpdateThemeMode(themeMode: ThemeMode.values.byName(themeModeName)));
   }
 
+  void setCalculationHistories(List<CalculationHistory> calculationHistories) {
+    context
+        .read<CalculationHistoryBloc>()
+        .add(SetCalculationHistory(calculationHistories: calculationHistories));
+  }
+
   @override
   void initState() {
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) async {
@@ -52,54 +64,78 @@ class _AppState extends State<App> {
           prefs.getString(AppConstant.sharedPreferencesThemeMode);
       themeModeName = themeModeName ?? ThemeMode.system.name;
       updateThemeMode(themeModeName);
+
+      final getAllCalculationHistoryUseCase =
+          GetIt.I<GetAllCalculationHistoryUseCase>();
+      final calculationHistories =
+          await getAllCalculationHistoryUseCase.call(null);
+      setCalculationHistories(calculationHistories.toList());
     });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Builder(builder: (context) {
-      final mainColorIndex = context.watch<MainColorIndexBloc>().state;
-      final locale = context.watch<LocaleBloc>().state;
-      final themeMode = context.watch<ThemeModeBloc>().state;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth <= AppConstant.smallScreenMaxWidth) {
+          context
+              .read<ScreenSizeBloc>()
+              .add(UpdateScreenSize(screenSize: ScreenSize.small));
+        } else if (constraints.maxWidth <= AppConstant.mediumScreenMaxWidth) {
+          context
+              .read<ScreenSizeBloc>()
+              .add(UpdateScreenSize(screenSize: ScreenSize.medium));
+        } else {
+          context
+              .read<ScreenSizeBloc>()
+              .add(UpdateScreenSize(screenSize: ScreenSize.large));
+        }
 
-      return MaterialApp.router(
-        // Provide the generated AppLocalizations to the MaterialApp. This
-        // allows descendant Widgets to display the correct translations
-        // depending on the user's locale.
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: locale,
+        return Builder(builder: (context) {
+          final mainColorIndex = context.watch<MainColorIndexBloc>().state;
+          final locale = context.watch<LocaleBloc>().state;
+          final themeMode = context.watch<ThemeModeBloc>().state;
 
-        // Use AppLocalizations to configure the correct application title
-        // depending on the user's locale.
-        //
-        // The appTitle is defined in .arb files found in the localization
-        // directory.
-        onGenerateTitle: (BuildContext context) => context.local.appTitle,
+          return MaterialApp.router(
+            // Provide the generated AppLocalizations to the MaterialApp. This
+            // allows descendant Widgets to display the correct translations
+            // depending on the user's locale.
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: locale,
 
-        // Define a light and dark color theme. Then, read the user's
-        // preferred ThemeMode (light, dark, or system default).
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: AppColor.mainColors[mainColorIndex],
-            brightness: Brightness.light,
-          ),
-          useMaterial3: true,
-        ),
-        darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: AppColor.mainColors[mainColorIndex],
-            brightness: Brightness.dark,
-          ),
-          useMaterial3: true,
-        ),
-        themeMode: themeMode,
+            // Use AppLocalizations to configure the correct application title
+            // depending on the user's locale.
+            //
+            // The appTitle is defined in .arb files found in the localization
+            // directory.
+            onGenerateTitle: (BuildContext context) => context.local.appTitle,
 
-        debugShowCheckedModeBanner: false,
-        debugShowMaterialGrid: false,
-        routerConfig: router,
-      );
-    });
+            // Define a light and dark color theme. Then, read the user's
+            // preferred ThemeMode (light, dark, or system default).
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: AppColor.mainColors[mainColorIndex],
+                brightness: Brightness.light,
+              ),
+              useMaterial3: true,
+            ),
+            darkTheme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: AppColor.mainColors[mainColorIndex],
+                brightness: Brightness.dark,
+              ),
+              useMaterial3: true,
+            ),
+            themeMode: themeMode,
+
+            debugShowCheckedModeBanner: false,
+            debugShowMaterialGrid: false,
+            routerConfig: router,
+          );
+        });
+      },
+    );
   }
 }

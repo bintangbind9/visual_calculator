@@ -10,11 +10,28 @@
   "english": "English",
   "indonesian": "Indonesian",
   "calculate": "Calculate",
+  "calculating": "Calculating...",
   "expression": "Expression",
   "result": "Result",
   "gallery": "Gallery",
   "camera": "Camera",
   "file": "File",
   "other": "Other",
-  "loading": "Loading"
+  "loading": "Loading",
+  "ok": "OK",
+  "couldNotCreateCalculationHistory": "Could Not Add Calculation History.",
+  "couldNotGetCalculationHistory": "Could Not Get Calculation History.",
+  "couldNotGetAllCalculationHistory": "Could Not Get All Calculation Histories.",
+  "couldNotUpdateCalculationHistory": "Could Not Update Calculation History.",
+  "couldNotDeleteCalculationHistory": "Could Not Delete Calculation History.",
+  "textDetectedIsEmpty": "The text detected is empty.",
+  "textDetectedIsInvalid": "The text detected ('{text}') is invalid.",
+  "@textDetectedIsInvalid": {
+    "placeholders": {
+      "text": {
+        "type": "String",
+        "example": "abc"
+      }
+    }
+  }
 }

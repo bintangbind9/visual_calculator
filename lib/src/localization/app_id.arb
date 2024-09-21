@@ -10,11 +10,28 @@
   "english": "Inggris",
   "indonesian": "Bahasa Indonesia",
   "calculate": "Hitung",
+  "calculating": "Menghitung...",
   "expression": "Ekspresi",
   "result": "Hasil",
   "gallery": "Galeri",
   "camera": "Kamera",
   "file": "Berkas",
   "other": "Lainnya",
-  "loading": "Memuat"
+  "loading": "Memuat",
+  "ok": "OK",
+  "couldNotCreateCalculationHistory": "Tidak bisa menambahkan riwayat perhitungan.",
+  "couldNotGetCalculationHistory": "Tidak bisa mendapatkan riwayat perhitungan.",
+  "couldNotGetAllCalculationHistory": "Tidak bisa mendapatkan semua riwayat perhitungan.",
+  "couldNotUpdateCalculationHistory": "Tidak bisa memperbarui riwayat perhitungan.",
+  "couldNotDeleteCalculationHistory": "Tidak bisa menghapus riwayat perhitungan.",
+  "textDetectedIsEmpty": "Teks yang dideteksi kosong.",
+  "textDetectedIsInvalid": "Teks yang dideteksi ('{text}') tidak valid.",
+  "@textDetectedIsInvalid": {
+    "placeholders": {
+      "text": {
+        "type": "String",
+        "example": "abc"
+      }
+    }
+  }
 }

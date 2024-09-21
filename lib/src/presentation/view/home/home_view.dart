@@ -11,11 +11,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../common/constant/app_color.dart';
 import '../../../common/constant/app_constant.dart';
 import '../../../common/enum/upload_type.dart';
+import '../../../common/exception/database_exception.dart';
+import '../../../common/util/calculator/calculator.dart';
+import '../../../common/util/dialog/info_dialog.dart';
 import '../../../common/util/extension/build_context_extension.dart';
 import '../../../common/util/overlay/loading/loading_screen.dart';
 import '../../../common/util/platform/app_platform.dart';
 import '../../../common/util/text_recognition/text_recognition.dart';
+import '../../../domain/entity/calculation_history.dart';
+import '../../../domain/usecase/calculation_history/create_calculation_history_use_case.dart';
+import '../../../domain/usecase/calculation_history/delete_calculation_history_use_case.dart';
 import '../../../router/routes.dart';
+import '../../bloc/calculation_history/calculation_history_bloc.dart';
 import '../../bloc/main_color_index/main_color_index_bloc.dart';
 
 class HomeView extends StatelessWidget {
@@ -58,13 +65,80 @@ class HomeView extends StatelessWidget {
             ),
           ],
         ),
-        body: Container(),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: BlocBuilder<CalculationHistoryBloc, CalculationHistoryState>(
+            builder: (context, state) {
+              return ListView.separated(
+                shrinkWrap: true,
+                itemCount: state.calculationHistories.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 4),
+                itemBuilder: (context, index) {
+                  final calculationHistory = state.calculationHistories[index];
+
+                  return Dismissible(
+                    key: Key('CalculationHistoryId${calculationHistory.id}'),
+                    direction: DismissDirection.startToEnd,
+                    background: Container(
+                      color: Colors.red,
+                      child: const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    onDismissed: (direction) async {
+                      final deleteCalculationHistoryUseCase =
+                          GetIt.I<DeleteCalculationHistoryUseCase>();
+                      await deleteCalculationHistoryUseCase
+                          .call(calculationHistory.id);
+
+                      if (context.mounted) {
+                        context.read<CalculationHistoryBloc>().add(
+                            RemoveCalculationHistory(
+                                calculationHistory: calculationHistory));
+                      }
+                    },
+                    child: ListTile(
+                      title: Text(
+                        calculationHistory.expression,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: Text(
+                        '= ${calculationHistory.result}',
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async => await onAddFile(context),
           child: const Icon(Icons.add),
         ),
       ),
     );
+  }
+
+  void addCalculationHistory(
+    BuildContext context,
+    CalculationHistory calculationHistory,
+  ) {
+    context
+        .read<CalculationHistoryBloc>()
+        .add(AddCalculationHistory(calculationHistory: calculationHistory));
   }
 
   Future<void> onAddFile(BuildContext context) async {
@@ -125,6 +199,7 @@ class HomeView extends StatelessWidget {
     }
 
     if (xFile == null) return;
+    String text = '';
 
     try {
       if (!context.mounted) return;
@@ -134,12 +209,44 @@ class HomeView extends StatelessWidget {
         text: context.local.loading,
       );
 
-      final text = await scanText(xFile);
+      text = await scanText(xFile);
+      text = text.trim();
 
-      // TODO: Calculate this text expression!
-      log(text);
+      final calculator = GetIt.I<Calculator>();
+      final result = calculator.evaluate(text);
+
+      final createCalculationHistoryUseCase =
+          GetIt.I<CreateCalculationHistoryUseCase>();
+      final calculationHistory = await createCalculationHistoryUseCase.call(
+        CalculationHistory(
+          expression: text,
+          result: result,
+        ),
+      );
+
+      if (!context.mounted) throw CouldNotCreateCalculationHistoryException();
+      addCalculationHistory(context, calculationHistory);
+    } on CouldNotCreateCalculationHistoryException catch (_) {
+      if (context.mounted) {
+        showInfoDialog(context, context.local.couldNotCreateCalculationHistory);
+      }
+    } on FormatException catch (e) {
+      log(e.toString());
+      if (context.mounted) {
+        showInfoDialog(
+            context,
+            text.isEmpty
+                ? context.local.textDetectedIsEmpty
+                : context.local.textDetectedIsInvalid(text));
+      }
+    } on StateError catch (e) {
+      log(e.toString());
+      if (context.mounted) {
+        showInfoDialog(context, context.local.textDetectedIsInvalid(text));
+      }
     } catch (e) {
       log(e.toString());
+      if (context.mounted) showInfoDialog(context, e.toString());
     } finally {
       GetIt.I<LoadingScreen>().hide();
     }
