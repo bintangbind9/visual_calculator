@@ -8,6 +8,8 @@ class AppConstant {
   static const double maxDialogWidth = 400;
   static const double smallScreenMaxWidth = 480;
   static const double mediumScreenMaxWidth = 1024;
+
+  // TODO: Store to flutter_secure_storage or config!
   static const String secretKey =
       'JP+QNZOA1YVcQ8jqlHnCDsN+k77fKYA6vhtWbWHXceU=';
   static const String secretIV = 'x76GGAAgRKlo916Zr7gWWw==';
