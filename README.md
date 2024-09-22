@@ -2,7 +2,7 @@
 
 Visual Calculator can help You scan images and calculate mathematical expressions for You.
 
-![Demo](https://drive.google.com/file/d/1yqHHgiSbYnI0Yzh6wvwnw_yxfqQ4JfEz/preview)
+![demo](https://github.com/user-attachments/assets/444536ee-3269-44ed-a4b1-eae38851a6af)
 
 ## Getting Started
 
