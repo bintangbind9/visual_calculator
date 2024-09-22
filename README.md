@@ -1,6 +1,9 @@
 # visual_calculator
 
-A new Flutter project.
+Visual Calculator can help You scan images and calculate mathematical expressions for You.
+
+## Demo
+<iframe src="https://drive.google.com/file/d/1yqHHgiSbYnI0Yzh6wvwnw_yxfqQ4JfEz/preview" width="640" height="480" allow="autoplay"></iframe>
 
 ## Getting Started
 
